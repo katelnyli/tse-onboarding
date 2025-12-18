@@ -33,7 +33,9 @@ export function TaskList({ title }: TaskListProps) {
         ) : (
           <ul>
             {tasks.map((task) => (
-              <li key={task._id}>{TaskItem({ task })}</li>
+              <li key={task._id}>
+                <TaskItem task={task} />
+              </li>
             ))}
           </ul>
         )}

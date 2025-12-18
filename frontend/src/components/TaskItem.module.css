@@ -36,3 +36,7 @@
 .checked {
   color: var(--color-text-secondary);
 }
+
+.errorModalText {
+  color: var(--color-tse-navy-blue);
+}
