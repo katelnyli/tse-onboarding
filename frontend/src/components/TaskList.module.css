@@ -1,0 +1,22 @@
+li {
+  list-style: none;
+}
+
+.title {
+  font: var(--font-heading);
+}
+
+.listContainer {
+  margin-top: 3rem;
+}
+
+.itemContainer {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  width: 100%;
+}
+
+.errorModalText {
+  color: var(--color-tse-navy-blue);
+}

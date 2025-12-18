@@ -1,0 +1,51 @@
+import { Dialog } from "@tritonse/tse-constellation";
+import { useEffect, useState } from "react";
+import { getAllTasks, type Task } from "src/api/tasks";
+import { TaskItem } from "src/components";
+import styles from "src/components/TaskList.module.css";
+
+export type TaskListProps = {
+  title: string;
+};
+
+export function TaskList({ title }: TaskListProps) {
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [errorModalMessage, setErrorModalMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    getAllTasks()
+      .then((result) => {
+        if (result.success) {
+          setTasks(result.data);
+        } else {
+          setErrorModalMessage(result.error);
+        }
+      })
+      .catch(setErrorModalMessage);
+  }, []);
+
+  return (
+    <div className={styles.listContainer}>
+      <span className={styles.title}>{title}</span>
+      <div className={styles.itemContainer}>
+        {tasks.length === 0 ? (
+          <p>No tasks yet. Add one above to get started.</p>
+        ) : (
+          <ul>
+            {tasks.map((task) => (
+              <li key={task._id}>{TaskItem({ task })}</li>
+            ))}
+          </ul>
+        )}
+      </div>
+      <Dialog
+        styleVersion="styled"
+        variant="error"
+        title="An error occurred"
+        content={<span className={styles.errorModalText}>{errorModalMessage}</span>}
+        isOpen={errorModalMessage !== null}
+        onClose={() => setErrorModalMessage(null)}
+      />
+    </div>
+  );
+}
