@@ -90,3 +90,35 @@ export const removeTask: RequestHandler = async (req, res, next) => {
     next(error);
   }
 };
+
+type UpdateTaskBody = {
+  title: string;
+  description?: string;
+  isChecked?: boolean;
+  _id?: string;
+};
+
+export const updateTask: RequestHandler = async (req, res, next) => {
+  const errors = validationResult(req);
+  const { title, description, isChecked, _id } = req.body as UpdateTaskBody;
+  const { id } = req.params;
+
+  try {
+    validationErrorParser(errors);
+
+    if (id !== _id) {
+      return res.status(400).send("ID mismatch");
+    }
+
+    const task = await TaskModel.findByIdAndUpdate(id, { title, description, isChecked });
+
+    if (task === null) {
+      return res.status(404).send("Task does not exist");
+    }
+
+    const updatedTask = await TaskModel.findById(id);
+    res.status(200).json(updatedTask);
+  } catch (error) {
+    next(error);
+  }
+};
