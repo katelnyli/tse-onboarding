@@ -14,7 +14,6 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
   overflow: hidden;
 }
 
@@ -23,6 +22,20 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.item:hover {
+  background-color: var(--color-surface);
+}
+
+.taskLink {
+  text-decoration: none;
+  color: inherit;
+}
+
+.taskLink:hover {
+  text-decoration: underline;
+  color: inherit;
 }
 
 .title {
