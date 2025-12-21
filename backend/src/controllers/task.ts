@@ -96,13 +96,14 @@ export const removeTask: RequestHandler = async (req, res, next) => {
 type UpdateTaskBody = {
   title?: string;
   description?: string;
+  assignee?: string;
   isChecked?: boolean;
   _id: string;
 };
 
 export const updateTask: RequestHandler = async (req, res, next) => {
   const errors = validationResult(req);
-  const { title, description, isChecked, _id } = req.body as UpdateTaskBody;
+  const { title, description, assignee, isChecked, _id } = req.body as UpdateTaskBody;
   const { id } = req.params;
 
   try {
@@ -112,7 +113,7 @@ export const updateTask: RequestHandler = async (req, res, next) => {
       return res.status(400).send("ID mismatch");
     }
 
-    const task = await TaskModel.findByIdAndUpdate(id, { title, description, isChecked });
+    const task = await TaskModel.findByIdAndUpdate(id, { title, description, assignee, isChecked });
 
     if (task === null) {
       return res.status(404).send("Task does not exist");
