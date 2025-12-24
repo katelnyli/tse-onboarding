@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { getTask, type Task } from "src/api/tasks";
-import { Page } from "src/components";
+import { Page, TaskForm, UserTag } from "src/components";
 import { Button } from "src/components/Button";
 import styles from "src/pages/TaskDetail.module.css";
 
 export function TaskDetail() {
   const [task, setTask] = useState<Task | null>(null);
   const [errorModalMessage, setErrorModalMessage] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
   const { id } = useParams();
 
   useEffect(() => {
@@ -49,37 +50,50 @@ export function TaskDetail() {
     timeStyle: "short",
   });
 
+  function handleSubmit(updatedTask: Task) {
+    setIsEditing(false);
+    setTask(updatedTask);
+  }
+
   return (
     <Page>
       <p>
         <Link to="/">Back to home</Link>
       </p>
-      <div className={styles.descContainer}>
-        <div className={styles.titleContainer}>
-          <span className={styles.title}>{task.title}</span>
-          <Button kind="primary" data-testid="task-edit-button" label="Edit task" />
-        </div>
+      {isEditing ? (
+        <TaskForm mode="edit" task={task} onSubmit={handleSubmit} />
+      ) : (
+        <div className={styles.descContainer}>
+          <div className={styles.titleContainer}>
+            <span className={styles.title}>{task.title}</span>
+            <Button
+              kind="primary"
+              data-testid="task-edit-button"
+              label="Edit task"
+              disabled={isEditing}
+              onClick={() => setIsEditing(true)}
+            />
+          </div>
 
-        {task.description ? (
-          <span className={styles.description}>{task.description}</span>
-        ) : (
-          <span className={styles.description}>(No description)</span>
-        )}
-        {task.assignee && (
-          <p>
+          {task.description ? (
+            <span className={styles.description}>{task.description}</span>
+          ) : (
+            <span className={styles.description}>(No description)</span>
+          )}
+          <span className={styles.userContainer}>
             <strong className={styles.label}>Assignee</strong>
-            {task.assignee._id}
-          </p>
-        )}
-        <span>
-          <strong className={styles.label}>Status</strong>
-          {task.isChecked ? "Done" : "Not Done"}
-        </span>
-        <span>
-          <strong className={styles.label}>Date Created</strong>
-          {dateFormatter.format(new Date(task.dateCreated))}
-        </span>
-      </div>
+            {task.assignee ? <UserTag user={task.assignee} /> : "Not assigned"}
+          </span>
+          <span>
+            <strong className={styles.label}>Status</strong>
+            {task.isChecked ? "Done" : "Not Done"}
+          </span>
+          <span>
+            <strong className={styles.label}>Date Created</strong>
+            {dateFormatter.format(new Date(task.dateCreated))}
+          </span>
+        </div>
+      )}
     </Page>
   );
 }

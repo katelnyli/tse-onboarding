@@ -1,0 +1,20 @@
+.userContainer {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  align-items: center;
+  overflow: hidden;
+}
+
+.userContainer span {
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.userPicture {
+  height: 32px;
+  width: auto;
+  border-radius: 50%;
+}

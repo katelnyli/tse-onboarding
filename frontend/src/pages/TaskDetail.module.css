@@ -22,6 +22,10 @@
   text-overflow: ellipsis;
 }
 
+.userContainer {
+  display: flex;
+}
+
 .title {
   font: var(--font-heading);
   flex: 1;
@@ -33,6 +37,7 @@
 
 .label {
   margin-right: 24px;
+  align-self: center;
 }
 
 .errorModalText {
