@@ -53,12 +53,13 @@ type CreateTaskBody = {
   title: string;
   description?: string;
   isChecked?: boolean;
+  assignee?: string;
 };
 
 export const createTask: RequestHandler = async (req, res, next) => {
   // extract any errors that were found by the validator
   const errors = validationResult(req);
-  const { title, description, isChecked } = req.body as CreateTaskBody;
+  const { title, description, isChecked, assignee } = req.body as CreateTaskBody;
 
   try {
     // if there are errors, then this function throws an exception
@@ -68,6 +69,7 @@ export const createTask: RequestHandler = async (req, res, next) => {
       title,
       description,
       isChecked,
+      assignee: assignee || null,
       dateCreated: Date.now(),
     });
 
