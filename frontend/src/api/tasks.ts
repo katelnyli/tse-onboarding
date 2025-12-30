@@ -1,4 +1,4 @@
-import { get, handleAPIError, post, put } from "src/api/requests";
+import { del, get, handleAPIError, post, put } from "src/api/requests";
 
 import type { APIResult } from "src/api/requests";
 import type { User } from "src/api/users";
@@ -116,6 +116,15 @@ export async function updateTask(task: UpdateTaskRequest): Promise<APIResult<Tas
     const response = await put(`/api/task/${task._id}`, task);
     const json = (await response.json()) as TaskJSON;
     return { success: true, data: parseTask(json) };
+  } catch (error) {
+    return handleAPIError(error);
+  }
+}
+
+export async function removeTask(id: string) {
+  try {
+    await del(`/api/task/${id}`);
+    return { success: true };
   } catch (error) {
     return handleAPIError(error);
   }

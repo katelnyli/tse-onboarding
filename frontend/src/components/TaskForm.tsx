@@ -1,10 +1,12 @@
 import { Dialog } from "@tritonse/tse-constellation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createTask, updateTask } from "src/api/tasks";
-import { Button, TextField } from "src/components";
+import { getAllUsers } from "src/api/users";
+import { Button, Dropdown, TextField } from "src/components";
 import styles from "src/components/TaskForm.module.css";
 
 import type { Task } from "src/api/tasks";
+import type { User } from "src/api/users";
 
 export type TaskFormProps = {
   mode: "create" | "edit";
@@ -44,6 +46,7 @@ export function TaskForm({ mode, task, onSubmit }: TaskFormProps) {
   const [assignee, setAssignee] = useState<string>(task?.assignee?._id || "");
   const [isLoading, setLoading] = useState<boolean>(false);
   const [errors, setErrors] = useState<TaskFormErrors>({});
+  const [users, setUsers] = useState<User[]>([]);
 
   // This state variable controls the error message that gets displayed to the user in the
   // Constellation `Dialog` component. If it's `null`, there's no error, so we don't display the Dialog.
@@ -60,7 +63,7 @@ export function TaskForm({ mode, task, onSubmit }: TaskFormProps) {
     setLoading(true);
 
     if (mode === "create") {
-      createTask({ title, description })
+      createTask({ title, description, assignee })
         .then((result) => {
           if (result.success) {
             // clear the form
@@ -114,6 +117,18 @@ export function TaskForm({ mode, task, onSubmit }: TaskFormProps) {
 
   const formTitle = mode === "create" ? "New task" : "Edit task";
 
+  useEffect(() => {
+    getAllUsers()
+      .then((result) => {
+        if (result.success && result.data) {
+          setUsers(result.data);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to fetch users:", error);
+      });
+  });
+
   return (
     <form className={styles.form}>
       {/* we could just use a `<div>` element because we don't need the special
@@ -141,13 +156,18 @@ export function TaskForm({ mode, task, onSubmit }: TaskFormProps) {
         />
       </div>
       <div className={styles.formRow}>
-        <TextField
-          className={styles.textField}
-          data-testid="task-assignee-input"
-          label="Assignee ID (optional)"
+        <Dropdown
+          label="Assignee"
+          placeholder="Choose assignee"
           value={assignee}
-          onChange={(event) => setAssignee(event.target.value)}
+          onChange={setAssignee}
+          disabled={users.length === 0}
+          options={[
+            { label: "Unassigned", value: "" },
+            ...users.map((user) => ({ label: user.name, value: user._id })),
+          ]}
         />
+
         {/* set `type="primary"` on the button so the browser doesn't try to
         handle it specially (because it's inside a `<form>`) */}
         <Button
