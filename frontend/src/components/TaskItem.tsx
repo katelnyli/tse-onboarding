@@ -1,15 +1,16 @@
 import { Dialog } from "@tritonse/tse-constellation";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { type Task, updateTask } from "src/api/tasks";
-import { CheckButton, UserTag } from "src/components";
+import { removeTask, type Task, updateTask } from "src/api/tasks";
+import { CheckButton, DeleteButton, UserTag } from "src/components";
 import styles from "src/components/TaskItem.module.css";
 
 export type TaskItemProps = {
   task: Task;
+  onDelete?: () => void;
 };
 
-export function TaskItem({ task: initialTask }: TaskItemProps) {
+export function TaskItem({ task: initialTask, onDelete }: TaskItemProps) {
   const [task, setTask] = useState<Task>(initialTask);
   const [isLoading, setLoading] = useState<boolean>(false);
   const [errorModalMessage, setErrorModalMessage] = useState<string | null>(null);
@@ -33,6 +34,25 @@ export function TaskItem({ task: initialTask }: TaskItemProps) {
     textContainer += ` ${styles.checked}`;
   }
 
+  const handleDelete = () => {
+    void (async () => {
+      setLoading(true);
+      try {
+        const result = await removeTask(task._id);
+
+        if (result.success === true) {
+          onDelete?.();
+        } else if ("error" in result) {
+          setErrorModalMessage(result.error);
+        } else {
+          setErrorModalMessage("Failed to delete task.");
+        }
+      } finally {
+        setLoading(false);
+      }
+    })();
+  };
+
   return (
     <div className={styles.item}>
       <CheckButton checked={task.isChecked} onPress={handleToggleCheck} disabled={isLoading} />
@@ -45,6 +65,7 @@ export function TaskItem({ task: initialTask }: TaskItemProps) {
         </div>
       </div>
       <UserTag className={styles.userTag} user={task.assignee} />
+      <DeleteButton onPress={handleDelete} disabled={isLoading} />
 
       <Dialog
         styleVersion="styled"

@@ -8,6 +8,16 @@ export type User = {
   profilePictureURL?: string;
 };
 
+export async function getAllUsers(): Promise<APIResult<User[]>> {
+  try {
+    const response = await get("/api/users");
+    const json = (await response.json()) as User[];
+    return { success: true, data: json };
+  } catch (error) {
+    return handleAPIError(error);
+  }
+}
+
 export async function getUser(id: string): Promise<APIResult<User>> {
   try {
     const response = await get(`api/user/${id}`);

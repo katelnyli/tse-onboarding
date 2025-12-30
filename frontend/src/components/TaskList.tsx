@@ -6,9 +6,11 @@ import styles from "src/components/TaskList.module.css";
 
 export type TaskListProps = {
   title: string;
+  refreshKey?: number;
+  onDelete?: () => void;
 };
 
-export function TaskList({ title }: TaskListProps) {
+export function TaskList({ title, refreshKey, onDelete }: TaskListProps) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [errorModalMessage, setErrorModalMessage] = useState<string | null>(null);
 
@@ -22,7 +24,7 @@ export function TaskList({ title }: TaskListProps) {
         }
       })
       .catch(setErrorModalMessage);
-  }, []);
+  }, [refreshKey]);
 
   return (
     <div className={styles.listContainer}>
@@ -34,7 +36,7 @@ export function TaskList({ title }: TaskListProps) {
           <ul>
             {tasks.map((task) => (
               <li key={task._id}>
-                <TaskItem task={task} />
+                <TaskItem task={task} onDelete={onDelete} />
               </li>
             ))}
           </ul>

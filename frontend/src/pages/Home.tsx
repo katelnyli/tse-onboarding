@@ -1,7 +1,13 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Page, TaskForm, TaskList } from "src/components";
 
 export function Home() {
+  const [refreshKey, setRefreshKey] = useState(0);
+  const handleTaskDeleted = () => {
+    setRefreshKey((prev) => prev + 1);
+  };
+
   return (
     <Page>
       <title>Home | TSE Todos</title>
@@ -11,8 +17,8 @@ export function Home() {
         loads faster (see https://reactrouter.com/en/main/components/link) */}
         <Link to="/about">About this app</Link>
       </p>
-      <TaskForm mode="create" />
-      <TaskList title="All Tasks" />
+      <TaskForm mode="create" onSubmit={() => setRefreshKey((prev) => prev + 1)} />
+      <TaskList title="All Tasks" refreshKey={refreshKey} onDelete={handleTaskDeleted} />
     </Page>
   );
 }
